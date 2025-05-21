@@ -219,3 +219,5 @@ export function MainLayout({ user }: MainLayoutProps) {
     </div>
   )
 }
+
+export default MainLayout;
