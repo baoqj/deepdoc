@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { MainLayout } from "@/components/main-layout";
+import MainLayout from "@/components/main-layout";
 
 interface UserInfo {
   userName: string | null;
