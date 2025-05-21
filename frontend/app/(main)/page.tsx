@@ -1,5 +1,5 @@
-import { MainLayout } from '@/components/main-layout';
+import MainLayout from "@/components/main-layout";
 
 export default function MainPage() {
-  return <MainLayout />;
+  return <MainLayout user={null} />;
 } 

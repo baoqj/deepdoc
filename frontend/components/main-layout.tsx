@@ -19,7 +19,7 @@ interface MainLayoutProps {
   user: UserInfo | null;
 }
 
-export function MainLayout({ user }: MainLayoutProps) {
+export default function MainLayout({ user }: MainLayoutProps) {
   const [currentPdf, setCurrentPdf] = useState<string | null>(null)
   const [leftPanelOpen, setLeftPanelOpen] = useState(true)
   const [rightPanelOpen, setRightPanelOpen] = useState(true)
@@ -219,5 +219,3 @@ export function MainLayout({ user }: MainLayoutProps) {
     </div>
   )
 }
-
-export default MainLayout;
