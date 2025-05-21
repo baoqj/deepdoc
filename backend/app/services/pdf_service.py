@@ -2,14 +2,49 @@ import os
 import re
 import shutil
 import uuid
-from translators import translate_text
+import urllib.request
+import argostranslate.package
+import argostranslate.translate
 from magic_pdf.data.data_reader_writer import FileBasedDataWriter, FileBasedDataReader
 from magic_pdf.data.dataset import PymuDocDataset, SupportedPdfParseMethod
 from magic_pdf.model.doc_analyze_by_custom_model import doc_analyze
 
 class PDFService:
     def __init__(self):
-        pass
+        # 初始化翻译模型
+        self._init_translation_models()
+        
+    def _init_translation_models(self):
+        """初始化翻译模型"""
+        try:
+            # 检查是否已安装模型
+            installed_languages = argostranslate.translate.get_installed_languages()
+            if len(installed_languages) == 0:
+                print("Warning: No translation models found. Please install models manually.")
+        except Exception as e:
+            print(f"Warning: Failed to initialize translation models: {str(e)}")
+
+    def _translate_text(self, text: str, target_lang: str) -> str:
+        """翻译文本到目标语言"""
+        try:
+            installed_languages = argostranslate.translate.get_installed_languages()
+            
+            # 根据目标语言设置翻译方向
+            if target_lang == 'zh':
+                from_lang = next(lang for lang in installed_languages if lang.code == "en")
+                to_lang = next(lang for lang in installed_languages if lang.code == "zh")
+            elif target_lang == 'en':
+                from_lang = next(lang for lang in installed_languages if lang.code == "zh")
+                to_lang = next(lang for lang in installed_languages if lang.code == "en")
+            else:
+                return text  # 不支持的语言直接返回原文
+                
+            # 创建翻译器并翻译
+            translation = from_lang.get_translation(to_lang)
+            return translation.translate(text)
+        except Exception as e:
+            print(f"Warning: Translation failed: {str(e)}")
+            return text  # 翻译失败时返回原文
 
     def safe_dirname(self, filename):
         # 转小写，去扩展名，空格->下划线，去除特殊字符，仅保留字母数字下划线
@@ -101,7 +136,8 @@ class PDFService:
         if lang in ('zh', 'en') and md_path and os.path.exists(md_path):
             with open(md_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-            lines_trans = [translate_text(line, to_language=lang) if line.strip() else line for line in lines]
+            # 使用新的翻译方法
+            lines_trans = [self._translate_text(line, lang) if line.strip() else line for line in lines]
             with open(md_path, 'w', encoding='utf-8') as f:
                 f.writelines(lines_trans)
         img_dir = local_image_dir
