@@ -10,7 +10,16 @@ import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { shouldHidePanel } from "@/utils/resize-utils"
 
-export function MainLayout() {
+interface UserInfo {
+  userName: string | null;
+  userPicture: string | null;
+}
+
+interface MainLayoutProps {
+  user: UserInfo | null;
+}
+
+export function MainLayout({ user }: MainLayoutProps) {
   const [currentPdf, setCurrentPdf] = useState<string | null>(null)
   const [leftPanelOpen, setLeftPanelOpen] = useState(true)
   const [rightPanelOpen, setRightPanelOpen] = useState(true)
@@ -136,6 +145,7 @@ export function MainLayout() {
         rightPanelOpen={rightPanelOpen}
         toggleLeftPanel={toggleLeftPanel}
         toggleRightPanel={toggleRightPanel}
+        user={user}
       />
 
       <div className="flex flex-1 overflow-hidden">
