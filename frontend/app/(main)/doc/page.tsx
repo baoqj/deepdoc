@@ -1,15 +1,16 @@
-"use client";
-
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { MainLayout } from '@/components/main-layout';
+import { Suspense } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { MainLayout } from "@/components/main-layout";
 
 interface UserInfo {
   userName: string | null;
   userPicture: string | null;
 }
 
-export default function DocPage() {
+// 客户端组件，包含 useSearchParams、useEffect 逻辑
+function DocPageInner() {
+  "use client";
   const [user, setUser] = useState<UserInfo | null>(null);
   const searchParams = useSearchParams();
 
@@ -27,9 +28,7 @@ export default function DocPage() {
       // Update state
       setUser({ userName, userPicture });
       // Clean up URL - redirect without query parameters
-      // router.replace('/doc', undefined, { shallow: true }); // Requires useRouter, but simple replace might work
-       window.history.replaceState({}, document.title, "/doc"); // Simple history manipulation
-
+      window.history.replaceState({}, document.title, "/doc");
     } else {
       // If no URL params, check localStorage for existing login
       const storedToken = localStorage.getItem('authToken');
@@ -43,12 +42,21 @@ export default function DocPage() {
         setUser(null); // Explicitly set to null if not logged in
       }
     }
-  }, [searchParams]); // Rerun effect when searchParams change
+  }, [searchParams]);
 
   // Pass user state to MainLayout
   return (
     <>
-    <MainLayout user={user} />
+      <MainLayout user={user} />
     </>
   );
-} 
+}
+
+// 服务器端导出，Suspense 包裹客户端组件
+export default function Page() {
+  return (
+    <Suspense>
+      <DocPageInner />
+    </Suspense>
+  );
+}
