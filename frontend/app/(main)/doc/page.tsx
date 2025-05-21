@@ -46,5 +46,9 @@ export default function DocPage() {
   }, [searchParams]); // Rerun effect when searchParams change
 
   // Pass user state to MainLayout
-  return <MainLayout user={user} />;
+  return (
+    <>
+    <MainLayout user={user} />
+    </>
+  );
 } 
